@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environments
+.env
+.env.local
+
+# Build outputs
+client/dist/
+server/dist/
+server/uploads/
+
+# Temporary / OS files
+read_docx.py
+docx_output.txt
+.DS_Store
