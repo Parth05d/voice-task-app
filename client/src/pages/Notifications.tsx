@@ -45,9 +45,9 @@ export function Notifications() {
   const markAsRead = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await api.patch(`/notifications/${id}/read`);
       setNotifications(notifications.map(n => n._id === id ? { ...n, isRead: true } : n));
-      window.dispatchEvent(new Event('notifications_updated'));
+      window.dispatchEvent(new CustomEvent('notifications_updated', { detail: { action: 'decrease' } }));
+      await api.patch(`/notifications/${id}/read`);
     } catch (error) {
       console.error(error);
     }
@@ -55,9 +55,9 @@ export function Notifications() {
 
   const markAllAsRead = async () => {
     try {
-      await api.patch('/notifications/read-all');
       setNotifications(notifications.map(n => ({ ...n, isRead: true })));
-      window.dispatchEvent(new Event('notifications_updated'));
+      window.dispatchEvent(new CustomEvent('notifications_updated', { detail: { action: 'clear' } }));
+      await api.patch('/notifications/read-all');
     } catch (error) {
       console.error(error);
     }

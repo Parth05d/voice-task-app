@@ -54,68 +54,86 @@ export function VoiceButton({ onParsed }: Props) {
     }
   };
 
+  const isListening = status === 'listening';
   return (
-    <div className='flex flex-col items-center gap-8 w-full max-w-lg mx-auto my-8 relative z-10'>
-      <div className="relative group perspective-1000">
-        {status === 'listening' && (
-           <div className="absolute inset-0 bg-secondary rounded-full animate-ping opacity-20 scale-[2.5]" />
-        )}
+    <div className={`border rounded-3xl p-6 md:p-10 mb-16 relative overflow-hidden group transition-all duration-500
+      ${isListening ? 'bg-error/5 border-error/20' : 'bg-surface-container-low border-primary/20 hover:border-primary/40'}`}
+    >
+      {isListening && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-error to-transparent opacity-50 shadow-[0_0_20px_rgba(255,180,171,0.5)] animate-pulse"></div>}
+      
+      <div className="flex flex-col md:flex-row items-center justify-between gap-8">
         
-        <button
-          onClick={status === 'listening' ? handleStopRecording : startListening}
-          disabled={loading}
-          className={`relative z-10 w-28 h-28 rounded-full flex items-center justify-center text-white transition-all duration-500
-            ${status === 'listening'
-              ? 'bg-secondary/20 shadow-[0_0_60px_rgba(65,238,194,0.4)] border border-secondary/50 scale-105'
-              : 'bg-surface-container-high hover:bg-surface-container-highest border border-primary/20 hover:border-primary/50 shadow-[0_0_30px_rgba(196,192,255,0.15)] group-hover:shadow-[0_0_40px_rgba(196,192,255,0.3)]'}`}
-        >
-          {loading ? (
-            <span className="material-symbols-outlined text-4xl text-primary animate-spin">refresh</span>
-          ) : status === 'listening' ? (
-            <div className="flex gap-1.5 items-center">
-              <motion.div animate={{ height: [12, 32, 12] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1.5 bg-secondary rounded-full"></motion.div>
-              <motion.div animate={{ height: [12, 48, 12] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.1 }} className="w-1.5 bg-secondary rounded-full"></motion.div>
-              <motion.div animate={{ height: [12, 24, 12] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.2 }} className="w-1.5 bg-secondary rounded-full"></motion.div>
-              <motion.div animate={{ height: [12, 36, 12] }} transition={{ repeat: Infinity, duration: 0.8, delay: 0.3 }} className="w-1.5 bg-secondary rounded-full"></motion.div>
-            </div>
-          ) : (
-            <span className="material-symbols-outlined text-[48px] text-primary group-hover:scale-110 transition-transform duration-500">mic</span>
-          )}
-        </button>
-      </div>
+        {/* Left Side: Mic & Status */}
+        <div className="flex items-center gap-6 w-full md:w-auto">
+          <button
+            onClick={isListening ? handleStopRecording : startListening}
+            disabled={loading}
+            className={`shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500 relative
+              ${isListening 
+                ? 'bg-error/10 border border-error/30 text-error shadow-[0_0_30px_rgba(255,180,171,0.2)] mic-listening' 
+                : 'bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 hover:scale-105 shadow-[0_0_20px_rgba(196,192,255,0.1)]'}`}
+          >
+            {loading ? (
+              <span className="material-symbols-outlined text-2xl md:text-3xl animate-spin">refresh</span>
+            ) : (
+              <span className="material-symbols-outlined text-2xl md:text-4xl" style={{fontVariationSettings: isListening ? "'FILL' 1" : "'FILL' 0"}}>{isListening ? 'mic' : 'mic_none'}</span>
+            )}
+          </button>
+          
+          <div className="flex-1 text-center md:text-left z-10 w-full md:w-auto">
+            <h3 className={`font-headline font-bold text-lg md:text-xl tracking-tight mb-1 transition-colors ${isListening ? 'text-[#c4c0ff]' : 'text-white'}`}>
+                {isListening ? 'LISTENING TO YOUR TASK...' : 'TAP TO RECORD TASK'}
+            </h3>
+            <p className="text-slate-500 font-mono text-[9px] md:text-[10px] uppercase tracking-[0.2em]">
+                {isListening ? 'SPEAK CLEARLY' : 'OR TYPE YOUR TASK BELOW'}
+            </p>
+        </div>
+        </div>
 
-      <div className="min-h-[60px] flex items-center justify-center text-center px-4 w-full">
-        <AnimatePresence>
-          {(status === 'listening' || transcriptDisplay) && (
-            <motion.p 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className='text-lg font-mono tracking-wide text-white py-4 px-6 rounded-2xl w-full border border-secondary/20 bg-secondary/5 shadow-[0_0_20px_rgba(65,238,194,0.1)] backdrop-blur-md'
-            >
-              <span className={status === 'listening' ? 'text-secondary animate-pulse' : 'text-primary'}>
-                {transcriptDisplay || "Recording audio... Speak now and press the visualizer to parse."}
-              </span>
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
+        {/* Right Side: Transcript or Fallback */}
+        <div className="w-full md:w-[40%]">
+          <AnimatePresence mode="wait">
+             {(isListening || transcriptDisplay) ? (
+                 <motion.div 
+                    key="listening-state"
+                    initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                    className="bg-surface-container-highest/50 border border-outline-variant/10 rounded-xl p-4 flex items-center justify-between"
+                 >
+                    <span className={`font-mono text-xs md:text-sm tracking-wide line-clamp-2 leading-relaxed
+                      ${isListening ? 'text-error animate-pulse' : 'text-primary'}`}>
+                      {transcriptDisplay || "Listening... Speak naturally to generate tasks."}
+                    </span>
+                    {isListening && (
+                        <div className="flex items-end gap-x-1 kinetic-wave h-8 shrink-0 ml-4 opacity-70">
+                            {[1,2,3,4,5].map(i => <div key={i} className="w-1 bg-error rounded-full" style={{animationDelay: `${i*0.1}s`}}></div>)}
+                        </div>
+                    )}
+                 </motion.div>
+             ) : (
+                 <motion.div 
+                    key="idle-state"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 bg-surface-container border border-outline-variant/10 rounded-xl p-2 focus-within:border-primary/40 focus-within:bg-surface-container-high transition-all"
+                 >
+                    <input
+                        value={fallbackText}
+                        onChange={e => setFallbackText(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleTextSubmit(fallbackText)}
+                        placeholder={isSupported ? "Manual command override..." : "Microphone unsupported. Manual fallback..."}
+                        className="flex-1 bg-transparent px-3 py-2 text-xs md:text-sm font-mono text-white focus:outline-none placeholder:text-slate-600"
+                    />
+                    <button
+                        onClick={() => handleTextSubmit(fallbackText)}
+                        disabled={loading || !fallbackText.trim()}
+                        className="text-primary hover:bg-primary/10 p-2 rounded-lg transition-colors disabled:opacity-30 flex items-center justify-center"
+                    >
+                        <span className="material-symbols-outlined text-sm md:text-base">send</span>
+                    </button>
+                 </motion.div>
+             )}
+          </AnimatePresence>
+        </div>
 
-      <div className='flex gap-3 w-full max-w-md bg-surface-container-low p-2 rounded-2xl border border-outline-variant/10 focus-within:border-primary/40 focus-within:shadow-[0_0_20px_rgba(196,192,255,0.1)] transition-all'>
-        <input
-          value={fallbackText}
-          onChange={e => setFallbackText(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleTextSubmit(fallbackText)}
-          placeholder={isSupported ? 'Manual command input...' : 'Microphone unsupported. Manual fallback...'}
-          className='flex-1 bg-transparent px-4 py-2 text-sm font-mono text-white focus:outline-none placeholder:text-slate-600'
-        />
-        <button
-          onClick={() => handleTextSubmit(fallbackText)}
-          disabled={loading || !fallbackText.trim()}
-          className='bg-surface-container-high hover:bg-primary/20 text-primary border border-outline-variant/20 hover:border-primary/40 px-6 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all disabled:opacity-50 flex items-center gap-2'
-        >
-          {loading && fallbackText ? <span className="material-symbols-outlined text-sm animate-spin">refresh</span> : 'Execute'}
-        </button>
       </div>
     </div>
   );

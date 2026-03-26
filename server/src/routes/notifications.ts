@@ -43,8 +43,6 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
   const authReq = req as AuthRequest;
   const userId = authReq.user!.id;
 
-  await generateReminders(userId);
-
   const notifications = await Notification
     .find({ userId })
     .sort({ createdAt: -1 });

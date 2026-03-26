@@ -1,98 +1,105 @@
+import { motion } from 'framer-motion';
 import { ITask } from '../types';
 import { format } from 'date-fns';
-import { motion } from 'framer-motion';
 
 interface Props {
   task: ITask;
-  onStatusChange: (id: string, status: string, due_date?: string) => void;
+  onStatusChange: (id: string, status: string, date?: string) => void;
   onDelete: (id: string) => void;
-  onDelayClick?: (task: ITask) => void;
-  onTaskClick?: (task: ITask) => void;
+  onDelayClick: (task: ITask) => void;
+  onTaskClick: (task: ITask) => void;
 }
 
-const STATUS_CONFIG = {
-  pending:   { bg: 'bg-primary-container text-primary', icon: 'schedule' },
-  completed: { bg: 'bg-on-secondary-container text-secondary', icon: 'check_circle' },
-  cancelled: { bg: 'bg-surface-container-high text-slate-400', icon: 'cancel' },
-  delayed:   { bg: 'bg-tertiary-container/20 text-tertiary', icon: 'warning' },
+const statusConfig: Record<string, { label: string, color: string, bg: string, border: string }> = {
+  pending:   { label: 'Pending',   color: 'text-primary',   bg: 'bg-primary/10',   border: 'border-primary/20' },
+  completed: { label: 'Completed', color: 'text-secondary', bg: 'bg-secondary/10', border: 'border-secondary/20' },
+  delayed:   { label: 'Delayed',   color: 'text-error',     bg: 'bg-error/10',     border: 'border-error/20' },
+  cancelled: { label: 'Cancelled', color: 'text-slate-400', bg: 'bg-surface-container-high', border: 'border-outline-variant/20' }
 };
 
 export function TaskCard({ task, onStatusChange, onDelete, onDelayClick, onTaskClick }: Props) {
-  const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status === 'pending';
-  const config = STATUS_CONFIG[task.status];
+  const isOverdue = !!task.due_date && new Date(task.due_date) < new Date() && task.status === 'pending';
+  const config = statusConfig[task.status] || statusConfig.pending;
+  const isDelayed = task.status === 'delayed' || !!task.original_due_date;
 
   return (
     <motion.div 
       layout
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 10 }} 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      onClick={() => onTaskClick?.(task)}
-      className={`bg-surface-container-low rounded-3xl p-6 transition-all duration-300 hover:bg-surface-container-highest border group ${onTaskClick ? 'cursor-pointer hover:-translate-y-1' : ''}
-        ${isOverdue ? 'border-error/20 shadow-[0_0_15px_rgba(255,180,171,0.05)]' : 'border-outline-variant/10 hover:border-primary/20'}`}
+      whileHover={{ y: -2 }}
+      onClick={() => onTaskClick(task)}
+      className="bg-[#111118] border border-outline-variant/10 rounded-[16px] p-6 hover:bg-surface-container-low transition-all group flex flex-col h-full cursor-pointer relative"
     >
-      <div className='flex justify-between items-start mb-4'>
-        <h3 className={`font-headline font-bold text-lg md:text-xl pr-4 ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-white'}`}>
-          {task.title}
-        </h3>
-        <div className={`flex items-center gap-1 text-[10px] uppercase font-black tracking-widest px-3 py-1 rounded-full ${config.bg}`}>
-          <span className="material-symbols-outlined text-sm">{config.icon}</span>
-          {task.status}
+      <div className="flex justify-between items-start mb-4">
+        <span className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase ${config.bg} ${config.color} border ${config.border}`}>
+          {config.label}
+        </span>
+        
+        {/* Quick Actions Hover Menu */}
+        <div className="flex gap-2">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                {(task.status !== 'completed' && task.status !== 'cancelled') && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'completed'); }}
+                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary hover:bg-secondary/20 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">check</span>
+                  </button>
+                )}
+                {(task.status !== 'completed' && task.status !== 'cancelled') && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDelayClick(task); }}
+                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">schedule</span>
+                  </button>
+                )}
+                {(task.status !== 'completed' && task.status !== 'cancelled') && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'cancelled'); }}
+                    className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-slate-400 hover:bg-surface-variant transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-sm">block</span>
+                  </button>
+                )}
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onDelete(task._id); }}
+                  className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-error hover:bg-error/20 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">delete</span>
+                </button>
+            </div>
+            <button className="text-slate-600 hover:text-on-surface group-hover:opacity-0 absolute right-6"><span className="material-symbols-outlined">more_vert</span></button>
         </div>
       </div>
 
-      {task.description && (
-        <p className='text-sm text-slate-400 mb-6 leading-relaxed'>{task.description}</p>
-      )}
-
-      {task.due_date && (
-        <div className={`flex items-center gap-2 text-xs font-mono tracking-wider mt-4 ${isOverdue ? 'text-error' : 'text-slate-500'}`}>
-          <span className="material-symbols-outlined text-sm">event</span>
-          <span>
-            {format(new Date(task.due_date), 'MMM dd, yyyy - HH:mm')}
-          </span>
-          {task.original_due_date && (
-            <span className='ml-2 line-through opacity-50 text-[10px]'>
-              (was: {format(new Date(task.original_due_date), 'MMM dd')})
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Action buttons */}
-      {['pending', 'delayed'].includes(task.status) && (
-        <div className='flex gap-4 mt-6 pt-6 border-t border-outline-variant/10'>
-          <button onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'completed'); }}
-            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-secondary hover:text-white transition-colors bg-secondary/10 hover:bg-secondary/20 py-3 rounded-xl'>
-            <span className="material-symbols-outlined text-base">task_alt</span> Complete
-          </button>
-          <button onClick={(e) => { 
-            e.stopPropagation(); 
-            if (onDelayClick) {
-              onDelayClick(task);
-            } else {
-              const newDate = prompt('New due date (YYYY-MM-DD):');
-              if (newDate) onStatusChange(task._id, 'delayed', newDate);
-            }
-          }}
-            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-tertiary hover:text-white transition-colors border border-outline-variant/20 hover:bg-surface-container py-3 rounded-xl'>
-            <span className="material-symbols-outlined text-base">update</span> Delay
-          </button>
-          <button onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'cancelled'); }}
-            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-slate-500 hover:text-white transition-colors hover:bg-surface-container-high py-3 rounded-xl'>
-            <span className="material-symbols-outlined text-base">close</span> Cancel
-          </button>
-        </div>
-      )}
+      <h4 className="text-xl font-headline font-bold text-on-surface mb-2 group-hover:text-primary transition-colors flex-1">{task.title}</h4>
       
-      {['completed', 'cancelled'].includes(task.status) && (
-         <div className='flex justify-end mt-4'>
-           <button onClick={(e) => { e.stopPropagation(); onDelete(task._id); }}
-            className='text-[10px] font-headline font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 text-error hover:text-error-container transition-all'>
-            Delete Record
-          </button>
-         </div>
+      {task.description ? (
+          <p className="text-sm text-slate-400 font-body mb-6 line-clamp-3 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">{task.description}</p>
+      ) : (
+          <p className="text-sm text-slate-500 font-body italic mb-6">No description</p>
       )}
+
+      <div className="flex items-center justify-between pt-4 border-t border-outline-variant/5 mt-auto">
+        {task.due_date ? (
+          <div className={`flex items-center gap-2 ${isOverdue ? 'text-error' : isDelayed ? 'text-primary' : 'text-slate-500'}`}>
+            <span className="material-symbols-outlined text-sm">{isOverdue || isDelayed ? 'warning' : 'calendar_today'}</span>
+            <span className="text-[10px] font-mono uppercase tracking-wider">{format(new Date(task.due_date), 'MMM dd, yyyy')}</span>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-slate-600">
+            <span className="material-symbols-outlined text-sm">event_busy</span>
+            <span className="text-[10px] font-mono uppercase tracking-wider">No Deadline</span>
+          </div>
+        )}
+        
+        <div className="flex -space-x-2">
+            <div className="w-6 h-6 rounded-full border border-background bg-surface-container-highest flex justify-center items-center text-[8px] font-bold text-primary">V</div>
+        </div>
+      </div>
     </motion.div>
   );
 }

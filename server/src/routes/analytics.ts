@@ -8,7 +8,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
   const authReq = req as AuthRequest;
   const userId = authReq.user!.id;
   const now = new Date();
-  const eightWeeksAgo = new Date(now.getTime() - 56 * 86400000);
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000);
 
   const [statusBreakdown, weeklyCompletions,
          onTimeVsLate, pendingByUrgency] = await Promise.all([
@@ -20,9 +20,9 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
 
     Task.aggregate([
       { $match: { userId, status: 'completed',
-          completed_at: { $gte: eightWeeksAgo } } },
+          completed_at: { $gte: sevenDaysAgo } } },
       { $group: {
-          _id: { $isoWeek: '$completed_at' },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$completed_at" } },
           count: { $sum: 1 },
           weekStart: { $min: '$completed_at' }
       }},
