@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Task } from '../models/Task';
+import { Notification } from '../models/Notification';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 
 const router = Router();
@@ -22,6 +23,15 @@ router.post('/', requireAuth, async (req: Request, res: Response) => {
     description: req.body.description,
     due_date: req.body.due_date ? new Date(req.body.due_date) : undefined,
   });
+
+  await Notification.create({
+    userId: authReq.user!.id,
+    type: 'task_update',
+    title: 'New Task Added',
+    message: `You successfully added task: "${task.title}".`,
+    relatedTaskId: task._id
+  });
+
   res.status(201).json(task);
 });
 
@@ -53,6 +63,25 @@ router.patch('/:id', requireAuth, async (req: Request, res: Response): Promise<v
     res.status(404).json({ error: 'Not found' });
     return;
   }
+
+  if (status === 'completed') {
+      await Notification.create({
+          userId: authReq.user!.id,
+          type: 'task_update',
+          title: 'Task Completed',
+          message: `Awesome job! You finished: "${task.title}".`,
+          relatedTaskId: task._id
+      });
+  } else if (status === 'delayed') {
+      await Notification.create({
+          userId: authReq.user!.id,
+          type: 'task_update',
+          title: 'Task Delayed',
+          message: `"${task.title}" has been delayed to a new due date.`,
+          relatedTaskId: task._id
+      });
+  }
+
   res.json(task);
 });
 

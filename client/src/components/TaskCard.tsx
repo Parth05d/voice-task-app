@@ -1,25 +1,25 @@
 import { ITask } from '../types';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Calendar, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
 
 interface Props {
   task: ITask;
   onStatusChange: (id: string, status: string, due_date?: string) => void;
   onDelete: (id: string) => void;
+  onDelayClick?: (task: ITask) => void;
+  onTaskClick?: (task: ITask) => void;
 }
 
 const STATUS_CONFIG = {
-  pending:   { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', icon: Clock },
-  completed: { bg: 'bg-green-500/10', text: 'text-green-400', border: 'border-green-500/20', icon: CheckCircle },
-  cancelled: { bg: 'bg-gray-500/10', text: 'text-gray-400', border: 'border-gray-500/20', icon: XCircle },
-  delayed:   { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20', icon: AlertCircle },
+  pending:   { bg: 'bg-primary-container text-primary', icon: 'schedule' },
+  completed: { bg: 'bg-on-secondary-container text-secondary', icon: 'check_circle' },
+  cancelled: { bg: 'bg-surface-container-high text-slate-400', icon: 'cancel' },
+  delayed:   { bg: 'bg-tertiary-container/20 text-tertiary', icon: 'warning' },
 };
 
-export function TaskCard({ task, onStatusChange, onDelete }: Props) {
+export function TaskCard({ task, onStatusChange, onDelete, onDelayClick, onTaskClick }: Props) {
   const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status === 'pending';
   const config = STATUS_CONFIG[task.status];
-  const Icon = config.icon;
 
   return (
     <motion.div 
@@ -27,32 +27,33 @@ export function TaskCard({ task, onStatusChange, onDelete }: Props) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      className={`glass rounded-2xl p-5 border transition-all duration-300 hover:shadow-2xl hover:bg-surface/80
-        ${isOverdue ? 'border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]' : 'border-white/5'}`}
+      onClick={() => onTaskClick?.(task)}
+      className={`bg-surface-container-low rounded-3xl p-6 transition-all duration-300 hover:bg-surface-container-highest border group ${onTaskClick ? 'cursor-pointer hover:-translate-y-1' : ''}
+        ${isOverdue ? 'border-error/20 shadow-[0_0_15px_rgba(255,180,171,0.05)]' : 'border-outline-variant/10 hover:border-primary/20'}`}
     >
-      <div className='flex justify-between items-start mb-3'>
-        <h3 className={`font-semibold text-lg ${task.status === 'completed' ? 'line-through text-textMuted' : 'text-textMain'}`}>
+      <div className='flex justify-between items-start mb-4'>
+        <h3 className={`font-headline font-bold text-lg md:text-xl pr-4 ${task.status === 'completed' ? 'line-through text-slate-500' : 'text-white'}`}>
           {task.title}
         </h3>
-        <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-medium ${config.bg} ${config.text} ${config.border} border`}>
-          <Icon size={14} />
-          <span className="capitalize">{task.status}</span>
+        <div className={`flex items-center gap-1 text-[10px] uppercase font-black tracking-widest px-3 py-1 rounded-full ${config.bg}`}>
+          <span className="material-symbols-outlined text-sm">{config.icon}</span>
+          {task.status}
         </div>
       </div>
 
       {task.description && (
-        <p className='text-sm text-textMuted mb-4 line-clamp-2'>{task.description}</p>
+        <p className='text-sm text-slate-400 mb-6 leading-relaxed'>{task.description}</p>
       )}
 
       {task.due_date && (
-        <div className={`flex items-center gap-2 text-sm mt-3 ${isOverdue ? 'text-red-400' : 'text-textMuted'}`}>
-          <Calendar size={14} />
+        <div className={`flex items-center gap-2 text-xs font-mono tracking-wider mt-4 ${isOverdue ? 'text-error' : 'text-slate-500'}`}>
+          <span className="material-symbols-outlined text-sm">event</span>
           <span>
-            {format(new Date(task.due_date), 'MMM d, yyyy h:mm a')}
+            {format(new Date(task.due_date), 'MMM dd, yyyy - HH:mm')}
           </span>
           {task.original_due_date && (
-            <span className='ml-2 line-through opacity-50 text-xs'>
-              (was: {format(new Date(task.original_due_date), 'MMM d')})
+            <span className='ml-2 line-through opacity-50 text-[10px]'>
+              (was: {format(new Date(task.original_due_date), 'MMM dd')})
             </span>
           )}
         </div>
@@ -60,30 +61,35 @@ export function TaskCard({ task, onStatusChange, onDelete }: Props) {
 
       {/* Action buttons */}
       {['pending', 'delayed'].includes(task.status) && (
-        <div className='flex gap-3 mt-5 pt-4 border-t border-white/5'>
-          <button onClick={() => onStatusChange(task._id, 'completed')}
-            className='flex-1 text-sm bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20 py-2 rounded-xl transition-colors font-medium'>
-            Complete
+        <div className='flex gap-4 mt-6 pt-6 border-t border-outline-variant/10'>
+          <button onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'completed'); }}
+            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-secondary hover:text-white transition-colors bg-secondary/10 hover:bg-secondary/20 py-3 rounded-xl'>
+            <span className="material-symbols-outlined text-base">task_alt</span> Complete
           </button>
-          <button onClick={() => {
-            const newDate = prompt('New due date (YYYY-MM-DD):');
-            if (newDate) onStatusChange(task._id, 'delayed', newDate);
+          <button onClick={(e) => { 
+            e.stopPropagation(); 
+            if (onDelayClick) {
+              onDelayClick(task);
+            } else {
+              const newDate = prompt('New due date (YYYY-MM-DD):');
+              if (newDate) onStatusChange(task._id, 'delayed', newDate);
+            }
           }}
-            className='flex-1 text-sm bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/20 py-2 rounded-xl transition-colors font-medium'>
-            Delay
+            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-tertiary hover:text-white transition-colors border border-outline-variant/20 hover:bg-surface-container py-3 rounded-xl'>
+            <span className="material-symbols-outlined text-base">update</span> Delay
           </button>
-          <button onClick={() => onStatusChange(task._id, 'cancelled')}
-            className='flex-1 text-sm bg-gray-500/10 text-gray-400 hover:bg-gray-500/20 border border-gray-500/20 py-2 rounded-xl transition-colors font-medium'>
-            Cancel
+          <button onClick={(e) => { e.stopPropagation(); onStatusChange(task._id, 'cancelled'); }}
+            className='flex-1 flex justify-center items-center gap-2 text-xs uppercase tracking-widest font-black text-slate-500 hover:text-white transition-colors hover:bg-surface-container-high py-3 rounded-xl'>
+            <span className="material-symbols-outlined text-base">close</span> Cancel
           </button>
         </div>
       )}
       
       {['completed', 'cancelled'].includes(task.status) && (
          <div className='flex justify-end mt-4'>
-           <button onClick={() => onDelete(task._id)}
-            className='text-xs text-red-400 hover:text-red-300 hover:underline transition-colors'>
-            Delete Task
+           <button onClick={(e) => { e.stopPropagation(); onDelete(task._id); }}
+            className='text-[10px] font-headline font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 text-error hover:text-error-container transition-all'>
+            Delete Record
           </button>
          </div>
       )}

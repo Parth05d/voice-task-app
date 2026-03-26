@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;1,400&amp;family=Manrope:wght@400;500;600&amp;family=Space+Grotesk:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-fixed-variant": "#713700",
+              "on-primary": "#2000a4",
+              "surface-tint": "#c4c0ff",
+              "on-secondary-fixed-variant": "#00513f",
+              "on-background": "#e4e1e9",
+              "tertiary-fixed-dim": "#ffb785",
+              "inverse-primary": "#4f44e2",
+              "secondary-fixed": "#55fcd0",
+              "error": "#ffb4ab",
+              "tertiary-container": "#db761f",
+              "on-primary-fixed": "#100069",
+              "inverse-on-surface": "#303036",
+              "surface-bright": "#39383e",
+              "outline-variant": "#464555",
+              "surface-dim": "#131318",
+              "surface-container": "#1f1f25",
+              "inverse-surface": "#e4e1e9",
+              "on-secondary": "#00382b",
+              "surface-container-high": "#2a292f",
+              "on-tertiary": "#502500",
+              "surface-variant": "#35343a",
+              "on-error-container": "#ffdad6",
+              "on-primary-fixed-variant": "#3622ca",
+              "on-secondary-fixed": "#002118",
+              "secondary-fixed-dim": "#28dfb5",
+              "on-secondary-container": "#005441",
+              "error-container": "#93000a",
+              "primary-fixed": "#e3dfff",
+              "on-tertiary-container": "#461f00",
+              "on-surface": "#e4e1e9",
+              "tertiary-fixed": "#ffdcc6",
+              "outline": "#918fa1",
+              "primary": "#c4c0ff",
+              "secondary-container": "#00d1a7",
+              "primary-container": "#8781ff",
+              "primary-fixed-dim": "#c4c0ff",
+              "background": "#131318",
+              "surface": "#131318",
+              "on-primary-container": "#1b0091",
+              "surface-container-highest": "#35343a",
+              "surface-container-low": "#1b1b20",
+              "on-error": "#690005",
+              "secondary": "#41eec2",
+              "surface-container-lowest": "#0e0e13",
+              "on-tertiary-fixed": "#301400",
+              "on-surface-variant": "#c7c4d8",
+              "tertiary": "#ffb785"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Manrope"],
+              "label": ["Space Grotesk"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+      }
+      .accent-glow {
+        box-shadow: 0 0 24px 0 rgba(196, 192, 255, 0.15);
+      }
+      .glass-card {
+        background: rgba(27, 27, 32, 0.6);
+        backdrop-filter: blur(12px);
+      }
+      body {
+        background-color: #0A0A0F;
+        color: #e4e1e9;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-8 h-20 bg-[#131318]/80 backdrop-blur-xl z-50">
+<div class="flex items-center gap-6">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<div class="text-2xl font-black tracking-tighter text-[#c4c0ff] flex items-center gap-2 font-headline">
+<span class="material-symbols-outlined">keyboard_voice</span>
+                VOX
+            </div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#c4c0ff]">notifications</span>
+</div>
+</header>
+<!-- NavigationDrawer (Hidden on Mobile) -->
+<aside class="hidden lg:flex flex-col fixed left-0 top-0 h-full p-6 w-64 bg-[#0e0e13] border-r border-[#464555]/20 z-40">
+<div class="mb-12 pt-20">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a high-tech digital human avatar with neon accents and futuristic clothing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNFn3Y8HJSXYmtEmFGu7EWvv_9-nUiKQePx0mVLlAefy7Kka16f2UwzOuFktV-sSnxql1nSijmN0hfcGAMq4CiiFoILDet5Y3UFvJb4u43n0u4xySyaxRfMDiQZDyCvuHHMSiGXdkZsYYPEek4aVwLryEIB-YnOx07fXuXsAaBkaUxfcCxr2FLydyDWbSpYzOd6I2rBEYFiI2Myau5uO9Qu9Da-CDsASkx7E9BqtWvr6Y91HW76lftx14PtF_Z476C4RB9Vy1abPv3"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary text-sm tracking-tight">Command Center</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest">VOX AI Active</p>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#2a292f] text-[#c4c0ff] rounded-lg font-headline text-sm font-medium transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#1b1b20] hover:text-[#c4c0ff] rounded-lg font-headline text-sm font-medium transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span> Analytics
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#1b1b20] hover:text-[#c4c0ff] rounded-lg font-headline text-sm font-medium transition-all" href="#">
+<span class="material-symbols-outlined">settings</span> Settings
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#1b1b20] hover:text-[#c4c0ff] rounded-lg font-headline text-sm font-medium transition-all" href="#">
+<span class="material-symbols-outlined">person</span> Profile
+                </a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="pt-32 pb-32 px-6 md:px-12 lg:ml-64 max-w-7xl mx-auto">
+<!-- Architectural Header -->
+<section class="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-3xl">
+<div class="flex items-center gap-3 mb-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase bg-primary/10 text-primary border border-primary/20">Pending</span>
+<span class="text-mono text-[11px] text-outline-variant tracking-widest uppercase">ID: VX-9042</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-headline font-black tracking-tighter text-on-surface leading-[0.9]">
+                    Quarterly Financial Sync
+                </h1>
+</div>
+<div class="flex flex-col items-start md:items-end gap-1">
+<p class="text-mono text-sm text-secondary tracking-tight">System Ready</p>
+<div class="h-1 w-32 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-full"></div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Primary Column: Voice Transcript -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Transcript Card -->
+<div class="glass-card rounded-2xl p-8 accent-glow border border-primary/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-6 opacity-20">
+<span class="material-symbols-outlined text-6xl text-primary">graphic_eq</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-6">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<h2 class="text-xs font-headline font-bold uppercase tracking-[0.3em] text-outline">Voice Transcript</h2>
+</div>
+<p class="text-2xl md:text-3xl font-mono italic text-on-surface leading-relaxed tracking-tight group-hover:text-primary transition-colors duration-500">
+                            "Schedule a strategic review meeting with the product design team to align on the Q4 roadmap and financial projections. Make sure Sarah from treasury is included for the overhead analysis..."
+                        </p>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/10 flex justify-between items-center">
+<div class="flex gap-4">
+<span class="text-mono text-[10px] text-outline">CONFIDENCE: 98.4%</span>
+<span class="text-mono text-[10px] text-outline">DURATION: 14s</span>
+</div>
+<button class="text-primary text-xs font-headline font-bold flex items-center gap-2">
+                            REPLAY AUDIO <span class="material-symbols-outlined text-sm">play_circle</span>
+</button>
+</div>
+</div>
+<!-- Form Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-6">
+<div class="group">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-secondary mb-2">Description</label>
+<textarea class="w-full bg-transparent border-b border-outline-variant/30 focus:border-primary outline-none py-3 text-on-surface-variant font-body resize-none min-h-[100px] transition-all" placeholder="Enter detailed notes...">Quarterly alignment meeting focused on reconciling design expenses with the master budget. Key focus on hiring projections and software licensing.</textarea>
+</div>
+</div>
+<div class="space-y-10">
+<div class="group">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-secondary mb-2">Due Date</label>
+<div class="flex items-center gap-3 py-3 border-b border-outline-variant/30 group-focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-outline-variant">calendar_today</span>
+<input class="bg-transparent border-none p-0 outline-none text-on-surface font-headline font-medium text-lg w-full" type="text" value="Oct 28, 2023"/>
+</div>
+</div>
+<div class="group">
+<label class="block text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-secondary mb-2">Urgency</label>
+<div class="flex items-center gap-3 py-3 border-b border-outline-variant/30 group-focus-within:border-primary transition-all">
+<span class="material-symbols-outlined text-error">priority_high</span>
+<select class="bg-transparent border-none p-0 outline-none text-on-surface font-headline font-medium text-lg w-full appearance-none">
+<option selected="">High</option>
+<option>Medium</option>
+<option>Low</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Column: Actions & Metadata -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Action Stack -->
+<div class="flex flex-col gap-4">
+<button class="w-full h-16 bg-gradient-to-br from-primary to-primary-container text-on-primary-container font-headline font-black text-lg rounded-xl accent-glow flex items-center justify-center gap-3 hover:scale-[1.02] transition-transform duration-200">
+<span class="material-symbols-outlined">check_circle</span>
+                        Mark as Done
+                    </button>
+<button class="w-full h-16 bg-surface-container-low border border-tertiary-container/30 text-tertiary font-headline font-bold rounded-xl flex items-center justify-center gap-3 hover:bg-tertiary-container/10 transition-colors">
+<span class="material-symbols-outlined">schedule</span>
+                        Delay
+                    </button>
+<button class="w-full h-16 text-outline-variant font-headline font-bold rounded-xl flex items-center justify-center gap-3 hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">delete</span>
+                        Discard
+                    </button>
+</div>
+<!-- Collaborative Insights -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/10">
+<h3 class="text-[10px] font-headline font-bold uppercase tracking-[0.2em] text-outline mb-6">Linked Intelligence</h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">groups</span>
+</div>
+<div>
+<p class="text-sm font-bold font-headline group-hover:text-primary transition-colors">Design Team Alpha</p>
+<p class="text-[11px] text-outline-variant">6 active participants</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">database</span>
+</div>
+<div>
+<p class="text-sm font-bold font-headline group-hover:text-secondary transition-colors">Financial_23_Q4.xlsx</p>
+<p class="text-[11px] text-outline-variant">Auto-detected context</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Architectural Element: Map/Location -->
+<div class="h-48 rounded-2xl overflow-hidden relative grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+<img alt="Location Context" class="w-full h-full object-cover" data-alt="minimalist dark mode map showing urban grid streets in obsidian and deep blue tones with one glowing violet marker" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgRooHFVaQClquSR8e12TSjCjiYVXwlGQLhi_IMeFoY4sC_TbzMSr837e4klSBCFxTqR4uW-Ev40MIQOsYbZb7B0XRIgd4f4QzT7-pEq2k25HHMG2hNkV-RpD3Qdvp1lYo7CM2dGe90CxmXiSLAf8QH7BLwtSykY_RN3UhICNVJHFUcur9OtHE3CtYqDBINCgdajYfmdVVoWvQjKC9kUopPbTpjbupBOOwq94obDzamAEe1L6iuqY_mm7hvcruMfq-7yLNlByT7t4d"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#0A0A0F] to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<p class="text-mono text-[10px] uppercase tracking-widest text-primary">Meeting Context</p>
+<p class="text-xs font-bold font-headline">Main HQ · Conference Room B</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-[#131318]/90 backdrop-blur-lg flex justify-around items-center px-6 pb-8 pt-4 rounded-t-3xl border-t border-[#464555]/20 shadow-[0_-10px_30px_rgba(108,99,255,0.15)]">
+<a class="flex flex-col items-center justify-center text-[#c4c0ff] bg-[#c4c0ff]/10 rounded-xl px-4 py-2 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-headline text-[10px] uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 active:bg-[#2a292f] scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-headline text-[10px] uppercase tracking-widest mt-1">Analytics</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-500 active:bg-[#2a292f] scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-headline text-[10px] uppercase tracking-widest mt-1">Settings</span>
+</a>
+</nav>
+</body></html>
