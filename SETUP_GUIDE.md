@@ -1,55 +1,132 @@
-# Comprehensive Setup Guide
+# ⚙️ Complete Setup Guide
 
-This guide will walk you through setting up **MongoDB Atlas**, **Supabase**, and **Groq**, and how to plug their keys into your Voice Task App.
+Follow these instructions to run the **Voice-First Task App** locally on your machine. 
 
-## 1. MongoDB Atlas (Database)
-MongoDB Atlas gives you a free, hosted database cluster.
+## 📋 Prerequisites
 
-1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) and sign up for a free account.
-2. Create a **New Cluster** and select the **M0 Free** tier.
-3. Once the cluster is created, go to **Database Access** (left sidebar) and create a database user (username and password). Note these down.
-4. Go to **Network Access** and click **Add IP Address**. Choose **Allow Access from Anywhere** (or use your specific IP).
-5. Go to **Database** > **Connect** > **Drivers** (Node.js).
-6. Copy the connection string. It will look something like:
-   `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
-7. In the string, replace `<username>` and `<password>` with the user credentials you created in step 3. 
-8. Add your custom database name in the URL before `?retryWrites` (e.g., `mongodb+srv://...mongodb.net/voicetasks?retryWrites...`).
-9. **Paste this URL** into `server/.env` as `MONGODB_URI`.
+Before you begin, ensure you have the following installed:
+1. **Node.js**: (v18+ recommended) [Download Node.js](https://nodejs.org/)
+2. **Git**: [Download Git](https://git-scm.com/)
+3. A terminal or command line interface (e.g., VS Code integrated terminal, Command Prompt, or iTerm).
 
 ---
 
-## 2. Supabase (Authentication & User IDs)
-Supabase provides secure user authentication.
+## 🚀 1. Clone & Install Dependencies
 
+First, open your terminal and navigate to the project directory:
+
+```bash
+# If you haven't cloned the repository, do so:
+# git clone <repository-url>
+cd "Voice Task App"
+```
+
+The application is split into two folders: `client` (Frontend) and `server` (Backend). You need to install dependencies for both.
+
+**Install Backend Dependencies:**
+```bash
+cd server
+npm install
+cd ..
+```
+
+**Install Frontend Dependencies:**
+```bash
+cd client
+npm install
+cd ..
+```
+
+---
+
+## 🔑 2. Environment Variables Configuration
+
+You need to set up free accounts for three external services: **MongoDB**, **Supabase**, and **Groq**. 
+
+### A. MongoDB Atlas (Database)
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register) and create a free account.
+2. Create a **New Cluster** (M0 Free tier).
+3. Under **Database Access**, create a user and password. Note these down.
+4. Under **Network Access**, click **Add IP Address** and choose **Allow Access from Anywhere**.
+5. Go to **Database** -> **Connect** -> **Drivers** (Node.js) and copy the connection string.
+6. It looks like: `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority`
+7. Replace `<username>` and `<password>` with the credentials from step 3. 
+
+### B. Supabase (Authentication)
 1. Go to [Supabase](https://supabase.com/) and create a free project.
-2. Wait a minute for the project database to be provisioned.
-3. In your project dashboard, go to the **Settings** (gear icon) on the bottom left.
-4. Click on **API** in the sidebar. Here you will find your keys:
-   - **Project URL**: Start copy-pasting this.
-   - **anon / public key**: This goes to the Frontend client.
-   - **service_role key**: This secret key goes to the Backend server.
-5. In your `client/.env` file, paste:
-   - `VITE_SUPABASE_URL=YOUR_PROJECT_URL`
-   - `VITE_SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY`
-6. In your `server/.env` file, paste:
-   - `SUPABASE_URL=YOUR_PROJECT_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY=YOUR_SERVICE_ROLE_KEY`
-   
-**Note**: Ensure **Email Authentication** is enabled in Supabase under `Authentication -> Providers`.
+2. In the dashboard, click the **Settings** (gear icon) -> **API**.
+3. Under **Project URL**, copy the URL.
+4. Under **Project API Keys**, copy both the `anon` (public) and `service_role` (secret) keys.
+5. In Supabase, go to **Authentication -> Settings** and ensure **Enable Email Signup** is toggled ON.
+
+### C. Groq (AI Inference)
+1. Go to [GroqCloud Console](https://console.groq.com/).
+2. Navigate to **API Keys** and click **Create API Key**.
+3. Copy the generated key (starts with `gsk_`).
 
 ---
 
-## 3. Groq (Free Fast AI Inference)
-Groq provides blazing fast AI models (like Llama 3) for free, which we use to intelligently extract tasks from your voice.
+### D. Creating the `.env` Files
 
-1. **Note**: The frontend app uses your browser's *built-in* speech recognition (Web Speech API) for the actual Voice-to-Text transcription, which is already 100% free and runs directly in the browser!
-2. We use Groq specifically for the **NLP Parsing** (structuring the transcribed text into JSON: title, description, and dates).
-3. Go to [GroqCloud Console](https://console.groq.com/).
-4. Create an account or log in.
-5. Navigate to **API Keys** on the left menu.
-6. Click **Create API Key**, give it a name, and copy the key (it starts with `gsk_`).
-7. **Paste this key** into your `server/.env` file as `GROQ_API_KEY`.
+Now, create the `.env` files in both the `server` and `client` directories.
+
+**In the `server` directory:**
+Create a file named `.env` (`server/.env`) and add the following:
+```env
+PORT=3001
+CLIENT_URL=http://localhost:5173
+
+# Paste your MongoDB connection string here (replace <username> and <password>)
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/voicetasks?retryWrites=true&w=majority
+
+# Supabase Keys
+SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY_SECRET
+
+# Groq API Key
+GROQ_API_KEY=YOUR_GROQ_API_KEY
+```
+
+**In the `client` directory:**
+Create a file named `.env` (`client/.env`) and add the following:
+```env
+# The URL where your backend is running
+VITE_API_URL=http://localhost:3001/api
+
+# Ensure you use your front-end accessible Supabase URL and Anon Key
+VITE_SUPABASE_URL=YOUR_SUPABASE_PROJECT_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_PUBLIC_KEY
+```
 
 ---
 
-Once you have set all these values in both `.env` files, run `npm install` and then `npm run dev` in both the `server` and `client` directories to start the full stack app!
+## 🚦 3. Running the Application Locally
+
+You need two separate terminal windows (or tabs) to run both the frontend and backend servers simultaneously.
+
+**Terminal 1: Start the Backend Server**
+```bash
+cd server
+npm run dev
+```
+*You should see a message saying "Server on port 3001" and "MongoDB Connected".*
+
+**Terminal 2: Start the Frontend Client**
+```bash
+cd client
+npm run dev
+```
+*You should see a message indicating Vite is running and accessible at `http://localhost:5173`.*
+
+---
+
+## 🎉 4. Using the App
+
+1. Open your browser and navigate to `http://localhost:5173/`.
+2. Register a new account via the login screen.
+3. Allow Chrome/Edge microphone permissions when prompted for voice tasks.
+4. Start speaking and watch your tasks magically appear!
+
+**Troubleshooting:**
+- **Cannot GET /** on the backend port: This is normal as the backend only serves `/api/...` routes.
+- **Voice not working:** Ensure you are using a Chromium-based browser (Chrome, Edge) as the Web Speech API is best supported there, and that you have granted microphone permissions.
