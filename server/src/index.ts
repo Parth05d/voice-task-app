@@ -12,6 +12,10 @@ const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('API is running...');
+});
+
 app.use('/api/tasks', taskRoutes);
 app.use('/api/voice', voiceRoutes);
 app.use('/api/analytics', analyticsRoutes);
