@@ -53,7 +53,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border border-outline-variant/20 bg-surface-container-high flex items-center justify-center shrink-0">
+          <Link to="/profile" className="relative w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border border-outline-variant/20 bg-surface-container-high flex items-center justify-center shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/40 transition-all">
             {session?.user?.user_metadata?.avatar_url || session?.user?.user_metadata?.picture ? (
                <img src={session?.user?.user_metadata?.avatar_url || session?.user?.user_metadata?.picture} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -61,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                  {session?.user?.email?.charAt(0) || 'U'}
                </span>
             )}
-          </div>
+          </Link>
           <Link to="/notifications" className="relative text-[#c4c0ff] p-2 rounded-full hover:bg-surface-container-high transition-all">
             <span className="material-symbols-outlined">notifications</span>
             {unreadCount > 0 && (
